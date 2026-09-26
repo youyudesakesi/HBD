@@ -1799,7 +1799,7 @@ function onCakeFinished() {
         }, 500);
     };
 }
-// 3. 动态注入 CSS 样式（已大幅调大转台并对齐蛋糕）
+// 3. 动态注入 CSS 样式（1:1 还原原图：大盘子 + 蛋糕稳立盘中）
 function injectAssemblyStyles() {
     if (document.getElementById('cake-assembly-styles')) return;
 
@@ -1812,17 +1812,17 @@ function injectAssemblyStyles() {
         
         '.assembly-main { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }',
         
-        '.floating-ingredient-wrapper { position: absolute; top: 12vh; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; cursor: pointer; z-index: 15; transition: opacity 0.3s ease; }',
+        '.floating-ingredient-wrapper { position: absolute; top: 8vh; left: 50%; transform: translateX(-50%); width: 12vh; height: 12vh; cursor: pointer; z-index: 15; transition: opacity 0.3s ease; }',
         '.floating-ingredient { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25)); }',
         
-        /* 🍰 1. 扩大整体展示区域的宽高（改大为 420px * 320px） */
-        '.cake-display-wrapper { position: absolute; bottom: 6vh; left: 50%; transform: translateX(-50%); width: 420px; height: 320px; display: flex; justify-content: center; align-items: flex-end; pointer-events: none; z-index: 10; }',
+        /* 🍰 整体展示区域 */
+        '.cake-display-wrapper { position: absolute; bottom: 6vh; left: 50%; transform: translateX(-50%); width: 50vh; height: 40vh; display: flex; justify-content: center; align-items: flex-end; pointer-events: none; z-index: 10; }',
         
-        /* 🧁 2. 大幅增大转台宽度（从 240px 增大到 380px） */
-        '.tray-img { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 500px; height: auto; z-index: 1; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.2)); }',
+        /* 🧁 1. 进一步加大转盘宽度（让托盘边缘明显露出一大圈） */
+        '.tray-img { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 44vh; height: auto; z-index: 1; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.25)); }',
         
-        /* 🎂 3. 调整蛋糕位置：向上抬高（margin-bottom: 75px），正好踩在转台盘面上 */
-        '.main-cake-img { position: relative; z-index: 2; max-width: 220px; max-height: 180px; margin-bottom: 100px; display: block; object-fit: contain; object-position: bottom center; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
+        /* 🎂 2. 精准缩放蛋糕大小并大幅向上抬高（16vh），让它完美立在转盘凹槽盘面上 */
+        '.main-cake-img { position: relative; z-index: 2; width: 22vh; max-height: 20vh; margin-bottom: 16vh; display: block; object-fit: contain; object-position: bottom center; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
         
         '.pulse-anim { animation: floatingBreath 2s ease-in-out infinite; }',
         '@keyframes floatingBreath { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.03); } }',
@@ -1832,10 +1832,6 @@ function injectAssemblyStyles() {
         
         '.cake-bounce { animation: cakeBounce 0.3s ease; }',
         '@keyframes cakeBounce { 0% { transform: scale(1); } 50% { transform: scale(1.05) translateY(3px); } 100% { transform: scale(1); } }',
-        
-        /* 📱 移动端小屏幕同步放大适配 */
-        '@media (max-height: 650px) { .cake-display-wrapper { bottom: 4vh; width: 320px; height: 240px; } .tray-img { width: 300px; } .main-cake-img { max-width: 170px; margin-bottom: 60px; } .floating-ingredient-wrapper { top: 8vh; width: 80px; height: 80px; } }',
-        '@media (max-width: 480px) { .assembly-hint { font-size: 0.95rem; padding: 8px 16px; top: 3%; } .cake-display-wrapper { bottom: 5vh; width: 320px; height: 240px; } .tray-img { width: 300px; } .main-cake-img { max-width: 170px; margin-bottom: 60px; } }',
 
         '.balloon-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 10000; overflow: hidden; }',
         '.balloon { position: absolute; bottom: -100px; width: 50px; height: 62px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; opacity: 0.9; animation: balloonRise 6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); }',
