@@ -1799,50 +1799,44 @@ function onCakeFinished() {
         }, 500);
     };
 }
-// 3. 动态注入 CSS 样式（已更新转台与桌面定位）
+// 3. 动态注入 CSS 样式（已大幅调大转台并对齐蛋糕）
 function injectAssemblyStyles() {
     if (document.getElementById('cake-assembly-styles')) return;
 
     const style = document.createElement('style');
     style.id = 'cake-assembly-styles';
     style.textContent = [
-        /* 1. 背景阶段：采用居中靠底对齐，背景图使用纯净桌面 dangaobeijing.jpg */
         '#cake-assembly-stage { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: url("dangaobeijing.jpg") center bottom / cover no-repeat; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; z-index: 9999; overflow: hidden; font-family: sans-serif; user-select: none; -webkit-user-select: none; }',
         
-        /* 提示框 */
         '.assembly-hint { position: absolute; top: 5%; background: rgba(255, 255, 255, 0.92); padding: 12px 24px; border-radius: 30px; font-size: 1.1rem; color: #d63031; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.15); z-index: 20; text-align: center; max-width: 85%; }',
         
         '.assembly-main { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }',
         
-        /* 悬浮食材定位 */
         '.floating-ingredient-wrapper { position: absolute; top: 12vh; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; cursor: pointer; z-index: 15; transition: opacity 0.3s ease; }',
         '.floating-ingredient { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25)); }',
         
-        /* 2. 蛋糕+转台 整体展示容器（锁定在桌面上） */
-        '.cake-display-wrapper { position: absolute; bottom: 8vh; left: 50%; transform: translateX(-50%); width: 280px; height: 220px; display: flex; justify-content: center; align-items: flex-end; pointer-events: none; z-index: 10; }',
+        /* 🍰 1. 扩大整体展示区域的宽高（改大为 420px * 320px） */
+        '.cake-display-wrapper { position: absolute; bottom: 6vh; left: 50%; transform: translateX(-50%); width: 420px; height: 320px; display: flex; justify-content: center; align-items: flex-end; pointer-events: none; z-index: 10; }',
         
-        /* 转台底座样式：贴在容器最底部 */
-        '.tray-img { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 240px; height: auto; z-index: 1; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.2)); }',
+        /* 🧁 2. 大幅增大转台宽度（从 240px 增大到 380px） */
+        '.tray-img { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 380px; height: auto; z-index: 1; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.2)); }',
         
-        /* 蛋糕本体样式：压在转台正上方 */
-        '.main-cake-img { position: relative; z-index: 2; max-width: 200px; max-height: 160px; margin-bottom: 35px; display: block; object-fit: contain; object-position: bottom center; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
+        /* 🎂 3. 调整蛋糕位置：向上抬高（margin-bottom: 75px），正好踩在转台盘面上 */
+        '.main-cake-img { position: relative; z-index: 2; max-width: 220px; max-height: 180px; margin-bottom: 75px; display: block; object-fit: contain; object-position: bottom center; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
         
-        /* 动画效果 */
         '.pulse-anim { animation: floatingBreath 2s ease-in-out infinite; }',
         '@keyframes floatingBreath { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.03); } }',
         
-        /* 食材下落动画：下落落到蛋糕上 */
         '.fly-down-anim { animation: flyDownToCake 0.45s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards; }',
         '@keyframes flyDownToCake { 0% { transform: translateY(0) scale(1.05); opacity: 1; } 100% { transform: translateY(40vh) scale(0.4); opacity: 0; } }',
         
         '.cake-bounce { animation: cakeBounce 0.3s ease; }',
         '@keyframes cakeBounce { 0% { transform: scale(1); } 50% { transform: scale(1.05) translateY(3px); } 100% { transform: scale(1); } }',
         
-        /* 移动端/小屏幕适配 */
-        '@media (max-height: 650px) { .cake-display-wrapper { bottom: 5vh; width: 220px; height: 180px; } .tray-img { width: 190px; } .main-cake-img { max-width: 160px; margin-bottom: 28px; } .floating-ingredient-wrapper { top: 8vh; width: 80px; height: 80px; } }',
-        '@media (max-width: 480px) { .assembly-hint { font-size: 0.95rem; padding: 8px 16px; top: 3%; } .cake-display-wrapper { bottom: 6vh; width: 220px; height: 180px; } .tray-img { width: 190px; } .main-cake-img { max-width: 160px; margin-bottom: 28px; } }',
+        /* 📱 移动端小屏幕同步放大适配 */
+        '@media (max-height: 650px) { .cake-display-wrapper { bottom: 4vh; width: 320px; height: 240px; } .tray-img { width: 300px; } .main-cake-img { max-width: 170px; margin-bottom: 60px; } .floating-ingredient-wrapper { top: 8vh; width: 80px; height: 80px; } }',
+        '@media (max-width: 480px) { .assembly-hint { font-size: 0.95rem; padding: 8px 16px; top: 3%; } .cake-display-wrapper { bottom: 5vh; width: 320px; height: 240px; } .tray-img { width: 300px; } .main-cake-img { max-width: 170px; margin-bottom: 60px; } }',
 
-        /* 🎈 气球 CSS 样式 */
         '.balloon-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 10000; overflow: hidden; }',
         '.balloon { position: absolute; bottom: -100px; width: 50px; height: 62px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; opacity: 0.9; animation: balloonRise 6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); }',
         '.balloon::after { content: ""; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); width: 2px; height: 14px; background: rgba(100, 100, 100, 0.5); }',
