@@ -1793,11 +1793,14 @@ function injectAssemblyStyles() {
         '.floating-ingredient-wrapper { position: absolute; top: 12vh; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; cursor: pointer; z-index: 15; transition: opacity 0.3s ease; }',
         '.floating-ingredient { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25)); }',
         
-        '/* 🍽️ 转盘底座（如果背景图自带转盘不需要单独显示，可设置 display: none;） */',
-        '.tray-img { position: absolute; bottom: 16vh; left: 50%; transform: translateX(-50%); width:400px; z-index: 4; object-fit: contain; display: block; }',
+        '/* 🍰 展示容器：作为相对定位的基准框，限制最大宽度，适配各种屏幕 */',
+        '.cake-display-wrapper { position: absolute; bottom: 12vh; left: 50%; transform: translateX(-50%); width: 90%; max-width: 420px; height: 320px; pointer-events: none; z-index: 10; }',
 
-        '/* 🎂 蛋糕主体（修改 bottom 调整高低，修改 width 调整大小） */',
-        '.main-cake-img { position: absolute; bottom: 25vh; left: 50%; transform: translateX(-50%); width: 380px; z-index: 5; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
+        '/* 🍽️ 转盘底座：相对于 wrapper 居中 */',
+        '.tray-img { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 90%; z-index: 4; object-fit: contain; display: block !important; }',
+
+        '/* 🎂 蛋糕主体：相对于 wrapper 踩在转盘正中央 */',
+        '.main-cake-img { position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); width: 68%; z-index: 5; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
 
         '/* 动画定义 */',
         '.pulse-anim { animation: floatingBreath 2s ease-in-out infinite; }',
@@ -1857,49 +1860,83 @@ function launchBalloons(count = 20) {
 // 第五部分：点蜡烛 -> 吹蜡烛 -> 结尾情书 + 彩带雨彩蛋
 // ==========================================
 
-// 3. 动态注入 CSS 样式（纯 vh 锚定桌面版：修正小圆点报错）
-function injectAssemblyStyles() {
-    if (document.getElementById('cake-assembly-styles')) return;
-
+// 1. 动态注入第五部分的 CSS 样式
+function injectCandleStyles() {
+    if (document.getElementById('candle-stage-styles')) return;
     const style = document.createElement('style');
-    style.id = 'cake-assembly-styles';
-    style.textContent = [
-        '#cake-assembly-stage { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: url("dangaobeijing.jpg") center bottom / cover no-repeat; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; z-index: 9999; overflow: hidden; font-family: sans-serif; user-select: none; -webkit-user-select: none; }',
-        
-        '.assembly-hint { position: absolute; top: 5%; background: rgba(255, 255, 255, 0.92); padding: 12px 24px; border-radius: 30px; font-size: 1.1rem; color: #d63031; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.15); z-index: 20; text-align: center; max-width: 85%; }',
-        
-        '.assembly-main { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }',
-        
-        '.floating-ingredient-wrapper { position: absolute; top: 10vh; left: 50%; transform: translateX(-50%); width: 12vh; height: 12vh; cursor: pointer; z-index: 15; transition: opacity 0.3s ease; }',
-        '.floating-ingredient { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25)); }',
-        
-        /* 🍰 展示容器 */
-        '.cake-display-wrapper { position: absolute; bottom: 4vh; left: 50%; transform: translateX(-50%); width: 50vh; height: 35vh; display: flex; justify-content: center; align-items: flex-end; pointer-events: none; z-index: 10; }',
-        
-        /* 🧁 转台：调大小改这里的 42vh */
-        '.tray-img { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 42vh; height: auto; z-index: 1; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.25)); }',
-        
-        /* 🎂 蛋糕：调大小改 21vh，调高低改 margin-bottom 的 15vh */
-        '.main-cake-img { position: relative; z-index: 2; width: 21vh; max-height: 20vh; margin-bottom: 15vh; display: block; object-fit: contain; object-position: bottom center; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
-        
-        '.pulse-anim { animation: floatingBreath 2s ease-in-out infinite; }',
-        '@keyframes floatingBreath { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.03); } }',
-        
-        '.fly-down-anim { animation: flyDownToCake 0.45s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards; }',
-        '@keyframes flyDownToCake { 0% { transform: translateY(0) scale(1.05); opacity: 1; } 100% { transform: translateY(40vh) scale(0.4); opacity: 0; } }',
-        
-        '.cake-bounce { animation: cakeBounce 0.3s ease; }',
-        '@keyframes cakeBounce { 0% { transform: scale(1); } 50% { transform: scale(1.05) translateY(3px); } 100% { transform: scale(1); } }',
-
-        '.balloon-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 10000; overflow: hidden; }',
-        '.balloon { position: absolute; bottom: -100px; width: 50px; height: 62px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; opacity: 0.9; animation: balloonRise 6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); }',
-        '.balloon::after { content: ""; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); width: 2px; height: 14px; background: rgba(100, 100, 100, 0.5); }',
-        '.balloon::before { content: ""; position: absolute; bottom: -3px; left: 50%; transform: translateX(-50%); width: 6px; height: 4px; background: inherit; border-radius: 3px; }',
-        '@keyframes balloonRise { 0% { transform: translateY(0) rotate(0deg); opacity: 0.95; } 50% { transform: translateY(-60vh) rotate(8deg); } 100% { transform: translateY(-120vh) rotate(-8deg); opacity: 0; } }'
-    ].join('\n');
-    
-    document.head.appendChild(style); // 👈 正确的形式：document.head
+    style.id = 'candle-stage-styles';
+    style.textContent = `
+        .candle-stage {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, #3d2314 0%, #1a0f0a 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            transition: background 1.5s ease; z-index: 9999;
+        }
+        .dark-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; opacity: 0; pointer-events: none; transition: opacity 1.2s ease; z-index: 10;
+        }
+        .cake-wrapper {
+            position: relative; display: inline-block; max-width: 500px; width: 85vw;
+            transition: opacity 1.5s ease, transform 1.5s ease; z-index: 5;
+        }
+        .cake-img { width: 100%; height: auto; display: block; image-rendering: pixelated; }
+        .flame-container {
+            position: absolute; width: 5%; opacity: 0; pointer-events: none;
+            transform-origin: bottom center; transition: opacity 0.4s ease, transform 0.3s ease;
+        }
+        .flame-left { top: 20%; left: 44.5%; transform: translate(-50%, -90%); }
+        .flame-right { top: 20%; left: 54.5%; transform: translate(-50%, -90%); }
+        .flame-img { width: 100%; height: auto; display: block; image-rendering: pixelated; }
+        .flame-container.lit { opacity: 1; animation: flameFlicker 1.2s ease-in-out infinite alternate; }
+        .flame-glow {
+            position: absolute; bottom: -10%; left: 50%; transform: translateX(-50%);
+            width: 180%; height: 120%; background: radial-gradient(circle, rgba(255, 215, 0, 0.85) 0%, rgba(255, 120, 0, 0) 70%);
+            border-radius: 50%; filter: blur(8px); opacity: 0; pointer-events: none;
+        }
+        .flame-container.lit .flame-glow { animation: glowPulse 1s ease-in-out infinite alternate; }
+        .flame-container.extinguish {
+            opacity: 0 !important; transform: translate(-50%, -90%) scale(0.1) !important;
+            transition: opacity 0.3s ease, transform 0.3s ease !important;
+        }
+        @keyframes flameFlicker {
+            0% { transform: translate(-50%, -90%) scaleY(0.96) scaleX(1) rotate(-1deg); }
+            30% { transform: translate(-50%, -90%) scaleY(1.05) scaleX(0.95) rotate(1.5deg); }
+            60% { transform: translate(-50%, -90%) scaleY(0.98) scaleX(1.03) rotate(-2deg); }
+            100% { transform: translate(-50%, -90%) scaleY(1.04) scaleX(0.97) rotate(1deg); }
+        }
+        @keyframes glowPulse {
+            0% { opacity: 0.6; transform: translateX(-50%) scale(0.85); }
+            100% { opacity: 1; transform: translateX(-50%) scale(1.15); }
+        }
+        .candle-btn {
+            position: absolute; bottom: 10%; padding: 14px 32px; font-size: 1.15rem; font-weight: bold;
+            color: #5c2600; background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border: none; border-radius: 30px; box-shadow: 0 8px 24px rgba(253, 203, 110, 0.35);
+            cursor: pointer; transition: all 0.3s ease; z-index: 20;
+        }
+        .candle-btn:active { transform: scale(0.95); }
+        .wish-text {
+            position: absolute; bottom: 15%; color: #ffeaa7; font-size: 1.25rem; letter-spacing: 3px;
+            opacity: 0; transition: opacity 1s ease; z-index: 25; text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .ending-container {
+            position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; color: #f5f6fa; z-index: 30; width: 85%; max-width: 480px;
+        }
+        .ending-line {
+            font-size: 1.25rem; line-height: 2.2; margin: 14px 0; opacity: 0; letter-spacing: 2.5px;
+            transition: opacity 1.2s ease; text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+        }
+        .signature {
+            margin-top: 48px; font-size: 1.05rem; color: #dcdde1; opacity: 0; text-align: right;
+            padding-right: 10px; letter-spacing: 2px; transition: opacity 1.8s ease;
+        }
+    `;
+    document.head.appendChild(style);
 }
+
 
 // 2. Web Audio API 音效合成（纯 JS）
 let audioCtx = null;
