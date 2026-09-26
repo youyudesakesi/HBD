@@ -1792,40 +1792,48 @@ function onCakeFinished() {
         }, 500);
     };
 }
-// 3. 动态注入 CSS 样式（已深度修复定位与适配问题）
+// 3. 动态注入 CSS 样式（已更新转台与桌面定位）
 function injectAssemblyStyles() {
     if (document.getElementById('cake-assembly-styles')) return;
 
     const style = document.createElement('style');
     style.id = 'cake-assembly-styles';
     style.textContent = [
+        /* 1. 背景阶段：采用居中靠底对齐，背景图使用纯净桌面 dangaobeijing.jpg */
         '#cake-assembly-stage { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: url("dangaobeijing.jpg") center bottom / cover no-repeat; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; z-index: 9999; overflow: hidden; font-family: sans-serif; user-select: none; -webkit-user-select: none; }',
-        '.assembly-hint { position: absolute; top: 30px; background: rgba(255, 255, 255, 0.95); padding: 10px 24px; border-radius: 30px; font-size: 1.1rem; color: #d63031; font-weight: bold; box-shadow: 0 6px 16px rgba(0,0,0,0.12); z-index: 20; text-align: center; max-width: 85%; }',
+        
+        /* 提示框 */
+        '.assembly-hint { position: absolute; top: 5%; background: rgba(255, 255, 255, 0.92); padding: 12px 24px; border-radius: 30px; font-size: 1.1rem; color: #d63031; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.15); z-index: 20; text-align: center; max-width: 85%; }',
         
         '.assembly-main { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }',
         
         /* 悬浮食材定位 */
-        '.floating-ingredient-wrapper { position: absolute; top: 100px; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; cursor: pointer; z-index: 15; transition: opacity 0.3s ease; }',
+        '.floating-ingredient-wrapper { position: absolute; top: 12vh; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; cursor: pointer; z-index: 15; transition: opacity 0.3s ease; }',
         '.floating-ingredient { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25)); }',
         
-        /* 蛋糕展示区域：定位锁定在底部桌面上 */
-        '.cake-display-wrapper { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); width: 260px; height: 180px; display: flex; justify-content: center; align-items: flex-end; pointer-events: none; z-index: 10; }',
+        /* 2. 蛋糕+转台 整体展示容器（锁定在桌面上） */
+        '.cake-display-wrapper { position: absolute; bottom: 8vh; left: 50%; transform: translateX(-50%); width: 280px; height: 220px; display: flex; justify-content: center; align-items: flex-end; pointer-events: none; z-index: 10; }',
         
-        '.main-cake-img { max-width: 100%; max-height: 100%; width: auto; height: auto; display: block; object-fit: contain; object-position: bottom center; filter: drop-shadow(0 6px 15px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
+        /* 转台底座样式：贴在容器最底部 */
+        '.tray-img { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 240px; height: auto; z-index: 1; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.2)); }',
         
+        /* 蛋糕本体样式：压在转台正上方 */
+        '.main-cake-img { position: relative; z-index: 2; max-width: 200px; max-height: 160px; margin-bottom: 35px; display: block; object-fit: contain; object-position: bottom center; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
+        
+        /* 动画效果 */
         '.pulse-anim { animation: floatingBreath 2s ease-in-out infinite; }',
         '@keyframes floatingBreath { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.03); } }',
         
-        /* 食材下落动画：优化垂直下落终点 */
+        /* 食材下落动画：下落落到蛋糕上 */
         '.fly-down-anim { animation: flyDownToCake 0.45s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards; }',
-        '@keyframes flyDownToCake { 0% { transform: translateY(0) scale(1.05); opacity: 1; } 100% { transform: translateY(220px) scale(0.4); opacity: 0; } }',
+        '@keyframes flyDownToCake { 0% { transform: translateY(0) scale(1.05); opacity: 1; } 100% { transform: translateY(40vh) scale(0.4); opacity: 0; } }',
         
         '.cake-bounce { animation: cakeBounce 0.3s ease; }',
         '@keyframes cakeBounce { 0% { transform: scale(1); } 50% { transform: scale(1.05) translateY(3px); } 100% { transform: scale(1); } }',
         
-        /* 针对小屏幕/移动端的响应式微调 */
-        '@media (max-height: 700px) { .cake-display-wrapper { bottom: 90px; width: 220px; height: 150px; } .floating-ingredient-wrapper { top: 70px; width: 80px; height: 80px; } }',
-        '@media (max-width: 480px) { .assembly-hint { font-size: 0.95rem; padding: 8px 16px; top: 20px; } .cake-display-wrapper { bottom: 80px; width: 200px; height: 140px; } }',
+        /* 移动端/小屏幕适配 */
+        '@media (max-height: 650px) { .cake-display-wrapper { bottom: 5vh; width: 220px; height: 180px; } .tray-img { width: 190px; } .main-cake-img { max-width: 160px; margin-bottom: 28px; } .floating-ingredient-wrapper { top: 8vh; width: 80px; height: 80px; } }',
+        '@media (max-width: 480px) { .assembly-hint { font-size: 0.95rem; padding: 8px 16px; top: 3%; } .cake-display-wrapper { bottom: 6vh; width: 220px; height: 180px; } .tray-img { width: 190px; } .main-cake-img { max-width: 160px; margin-bottom: 28px; } }',
 
         /* 🎈 气球 CSS 样式 */
         '.balloon-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 10000; overflow: hidden; }',
