@@ -1789,25 +1789,26 @@ function injectAssemblyStyles() {
         
         '.assembly-main { position: relative; width: 100%; max-width: 480px; height: 100%; background: url("dangaobeijing.jpg") center bottom / cover no-repeat; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; box-shadow: 0 0 30px rgba(0,0,0,0.5); }',
         
-        '/* 🍓 悬浮/下落食材（调整 top 可以改变初始高度） */',
+        '/* 🍓 悬浮食材 */',
         '.floating-ingredient-wrapper { position: absolute; top: 12vh; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; cursor: pointer; z-index: 15; transition: opacity 0.3s ease; }',
         '.floating-ingredient { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25)); }',
         
-        '/* 🍰 展示容器：作为相对定位的基准框，限制最大宽度，适配各种屏幕 */',
-        '.cake-display-wrapper { position: absolute; bottom: 12vh; left: 50%; transform: translateX(-50%); width: 90%; max-width: 420px; height: 320px; pointer-events: none; z-index: 10; }',
+        '/* 🍰 蛋糕展示框：锁定底部高度 */',
+        '.cake-display-wrapper { position: absolute; bottom: 8vh; left: 50%; transform: translateX(-50%); width: 90%; max-width: 360px; height: 260px; pointer-events: none; z-index: 10; display: flex; justify-content: center; align-items: flex-end; }',
 
-        '/* 🍽️ 转盘底座：相对于 wrapper 居中 */',
-        '.tray-img { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 90%; z-index: 4; object-fit: contain; display: block !important; }',
+        '/* 🍽️ 转盘底座：处于最底层 (z-index: 1) */',
+        '.tray-img { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; z-index: 1; object-fit: contain; display: block !important; }',
 
-        '/* 🎂 蛋糕主体：相对于 wrapper 踩在转盘正中央 */',
-        '.main-cake-img { position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); width: 68%; z-index: 5; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
+        '/* 🎂 蛋糕主体：叠在转盘上面 (z-index: 2)，并向上偏移压在盘子里 */',
+        '.main-cake-img { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 75%; z-index: 2; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
 
         '/* 动画定义 */',
         '.pulse-anim { animation: floatingBreath 2s ease-in-out infinite; }',
         '@keyframes floatingBreath { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.03); } }',
         
+        '/* 修正下落动画：确保正好落到蛋糕顶部 */',
         '.fly-down-anim { animation: flyDownToCake 0.45s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards; }',
-        '@keyframes flyDownToCake { 0% { transform: translateY(0) scale(1.05); opacity: 1; } 100% { transform: translateY(40vh) scale(0.4); opacity: 0; } }',
+        '@keyframes flyDownToCake { 0% { transform: translateY(0) scale(1.05); opacity: 1; } 100% { transform: translateY(48vh) scale(0.5); opacity: 0; } }',
         
         '.cake-bounce { animation: cakeBounce 0.3s ease; }',
         '@keyframes cakeBounce { 0% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.05) translateY(3px); } 100% { transform: translateX(-50%) scale(1); } }',
