@@ -1799,31 +1799,32 @@ function onCakeFinished() {
         }, 500);
     };
 }
-// 3. 动态注入 CSS 样式（纯 vh 锚定桌面版：小屏全屏比例完全一致）
+// 3. 动态注入 CSS 样式（背景与原图转盘完美融合，适配全屏与半屏）
 function injectAssemblyStyles() {
     if (document.getElementById('cake-assembly-styles')) return;
 
     const style = document.createElement('style');
     style.id = 'cake-assembly-styles';
     style.textContent = [
-        '#cake-assembly-stage { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: url("dangaobeijing.jpg") center bottom / cover no-repeat; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; z-index: 9999; overflow: hidden; font-family: sans-serif; user-select: none; -webkit-user-select: none; }',
+        /* 最外层舞台：全屏居中容器，防止电脑宽屏拉伸背景 */
+        '#cake-assembly-stage { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #2c2c2c; display: flex; justify-content: center; align-items: center; z-index: 9999; overflow: hidden; font-family: sans-serif; user-select: none; -webkit-user-select: none; }',
         
         '.assembly-hint { position: absolute; top: 5%; background: rgba(255, 255, 255, 0.92); padding: 12px 24px; border-radius: 30px; font-size: 1.1rem; color: #d63031; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.15); z-index: 20; text-align: center; max-width: 85%; }',
         
-        '.assembly-main { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }',
+        /* 核心舞台：限制最大宽度为 480px（精细比例窗口），电脑全屏/半屏/手机视角完全一致 */
+        '.assembly-main { position: relative; width: 100%; max-width: 480px; height: 100%; background: url("dangaobeijing.jpg") center bottom / cover no-repeat; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; box-shadow: 0 0 30px rgba(0,0,0,0.5); }',
         
-        '.floating-ingredient-wrapper { position: absolute; top: 10vh; left: 50%; transform: translateX(-50%); width: 12vh; height: 12vh; cursor: pointer; z-index: 15; transition: opacity 0.3s ease; }',
+        /* 🍓 掉落/悬浮食材大小位置 */
+        '.floating-ingredient-wrapper { position: absolute; top: 10vh; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; cursor: pointer; z-index: 15; transition: opacity 0.3s ease; }',
         '.floating-ingredient { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25)); }',
         
-        /* 🍰 展示容器：固定贴紧屏幕底部 4vh */
-        '.cake-display-wrapper { position: absolute; bottom: 4vh; left: 50%; transform: translateX(-50%); width: 50vh; height: 35vh; display: flex; justify-content: center; align-items: flex-end; pointer-events: none; z-index: 10; }',
+        /* 🎂 蛋糕：精确踩在背景图自带的转盘正中央 */
+        /* 想调蛋糕大小改 width: 175px；想调高低上下踩准改 bottom: 25.5vh */
+        '.main-cake-img { position: absolute; bottom: 25.5vh; left: 50%; transform: translateX(-50%); width: 175px; z-index: 5; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
         
-        /* 🧁 转台：宽度锁死为 42vh */
-        '.tray-img { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 42vh; height: auto; z-index: 1; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.25)); }',
-        
-        /* 🎂 蛋糕：宽度 21vh，底部悬空 margin-bottom: 15vh 刚好踩在转盘正中 */
-        '.main-cake-img { position: relative; z-index: 2; width: 21vh; max-height: 20vh; margin-bottom: 15vh; display: block; object-fit: contain; object-position: bottom center; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
-        
+        /* 隐藏多余的独立转盘图（使用背景原图的转盘） */
+        '.tray-img { display: none !important; }',
+
         '.pulse-anim { animation: floatingBreath 2s ease-in-out infinite; }',
         '@keyframes floatingBreath { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.03); } }',
         
@@ -1840,7 +1841,7 @@ function injectAssemblyStyles() {
         '@keyframes balloonRise { 0% { transform: translateY(0) rotate(0deg); opacity: 0.95; } 50% { transform: translateY(-60vh) rotate(8deg); } 100% { transform: translateY(-120vh) rotate(-8deg); opacity: 0; } }'
     ].join('\n');
     
-    document.head.appendChild(style);
+    document.head.appendChild(style); // 👈 英文源码 document.head
 }
 // 触发气球升空庆祝函数
 function launchBalloons(count = 20) {
