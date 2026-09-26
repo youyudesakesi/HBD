@@ -1569,8 +1569,7 @@ window.addEventListener('DOMContentLoaded', () => {
   Cake.init();
 });
 /* ================================================================
-   第一阶段：蛋糕组装环节 (纯 DOM 创建版，彻底杜绝渲染报错)
-   直接调用 startFinalStage() 即可启动
+   第一阶段：蛋糕组装环节 (纯 DOM 创建版)
    ================================================================ */
 
 // 1. Web Audio API 音效合成器
@@ -1630,32 +1629,30 @@ const CakeAudio = {
 };
 
 // 2. 主流程控制入口
-
-   function startFinalStage() {
+function startFinalStage() {
     injectAssemblyStyles();
 
-    // 创建或获取主容器
     let container = document.getElementById('cake-assembly-stage');
     if (!container) {
         container = document.createElement('div');
         container.id = 'cake-assembly-stage';
         document.body.appendChild(container);
     }
-    container.innerHTML = ''; // 清空内容
+    container.innerHTML = '';
     container.style.display = 'flex';
 
-    // 创建顶部提示框
+    // 提示框
     const hint = document.createElement('div');
     hint.className = 'assembly-hint';
     hint.id = 'assemblyHint';
     hint.textContent = '点击食材，把它放到蛋糕上吧～';
     container.appendChild(hint);
 
-    // 创建主交互区域
+    // 主交互区域
     const mainBox = document.createElement('div');
     mainBox.className = 'assembly-main';
 
-    // 创建悬浮食材包装盒
+    // 悬浮食材
     const floatingWrapper = document.createElement('div');
     floatingWrapper.className = 'floating-ingredient-wrapper';
     floatingWrapper.id = 'floatingWrapper';
@@ -1666,48 +1663,43 @@ const CakeAudio = {
     floatingImg.alt = '悬浮食材';
     floatingWrapper.appendChild(floatingImg);
 
-    // 创建蛋糕主体展示区域
+    // 蛋糕与底座展示区域
     const cakeWrapper = document.createElement('div');
     cakeWrapper.className = 'cake-display-wrapper';
-       // 1. 新增：创建转台图片（做底座）
-const trayImg = document.createElement('img');
-trayImg.className = 'tray-img';
-trayImg.id = 'trayImg';
-trayImg.src = 'zhuantai.png';
-trayImg.alt = '转台';
-cakeWrapper.appendChild(trayImg); // 先把转台塞进容器（在底层）
 
+    // 独立的转台底座图片
+    const trayImg = document.createElement('img');
+    trayImg.className = 'tray-img';
+    trayImg.id = 'trayImg';
+    trayImg.src = 'zhuantai.png';
+    trayImg.alt = '转台';
+    cakeWrapper.appendChild(trayImg);
+
+    // 蛋糕主体图片
     const mainCakeImg = document.createElement('img');
     mainCakeImg.className = 'main-cake-img';
     mainCakeImg.id = 'mainCakeImg';
-    /* 【素材图片】：纯蛋糕胚 chundangaopei.png */
     mainCakeImg.src = 'chundangaopei.png';
     mainCakeImg.alt = '蛋糕';
     cakeWrapper.appendChild(mainCakeImg);
 
-    // 组合节点
+    // 节点组合
     mainBox.appendChild(floatingWrapper);
     mainBox.appendChild(cakeWrapper);
     container.appendChild(mainBox);
 
-    // 食材组装阶段数据配置
+    // 步骤数据配置
     const steps = [
         {
-            /* 【素材图片】：火龙果丁 huolongguoding.png */
             ingredientSrc: 'huolongguoding.png',
-            /* 【素材图片】：火龙果蛋糕胚 huolongguodangao.png */
             targetCakeSrc: 'huolongguodangao.png'
         },
         {
-            /* 【素材图片】：奥利奥碎 aoliao_sui.png */
             ingredientSrc: 'aoliao_sui.png',
-            /* 【素材图片】：奥利奥蛋糕胚 aoliao.png */
             targetCakeSrc: 'aoliaodangao.png'
         },
         {
-            /* 【素材图片】：裱花袋 biaohuadai.png */
             ingredientSrc: 'biaohuadai.png',
-            /* 【素材图片】：完整蛋糕 wanzhengdangao.png */
             targetCakeSrc: 'wanzhengdangao.png'
         }
     ];
@@ -1731,7 +1723,7 @@ cakeWrapper.appendChild(trayImg); // 先把转台塞进容器（在底层）
             // 1. 播放下落动画
             floatingImg.className = 'floating-ingredient fly-down-anim';
 
-            // 2. 到达蛋糕表面 (400ms)
+            // 2. 400ms 后落到蛋糕上
             setTimeout(() => {
                 CakeAudio.playDing();
                 mainCakeImg.src = step.targetCakeSrc;
@@ -1746,85 +1738,68 @@ cakeWrapper.appendChild(trayImg); // 先把转台塞进容器（在底层）
                 if (currentStepIndex < steps.length) {
                     setTimeout(loadCurrentStep, 500);
                 } else {
-                    onAssemblyComplete(); // 【调用组装完成】
+                    onAssemblyComplete(); // 触发组装完成
                 }
             }, 400);
         };
     }
 
-    // ==========================================
-    // ⬇️ 【修改关键点】组装完成回调 ⬇️
-    // ==========================================
+    // 组装完成回调
     function onAssemblyComplete() {
-        hint.textContent = '✨ 蛋糕大功告成！太棒啦～'; // 原始提示
-        CakeAudio.playSuccessFanfare(); // 原始音效
+        CakeAudio.playSuccessFanfare();
 
-        // 【关键修改】在组装完成时，立即将蛋糕图片替换为你想要的图片
         const mainCakeImg = document.getElementById('mainCakeImg');
         if (mainCakeImg) {
-            // 【素材图片】：像素蛋糕插25蜡烛 chalazhudangao.png (即 image_8.png)
-            // 确保你文件夹里的图片文件名和这里完全一致（包括大小写）！
             mainCakeImg.src = 'wanzhengdangao.png'; 
-            mainCakeImg.alt = '全部组装完成的完整蛋糕完整蛋糕';
+            mainCakeImg.alt = '全部组装完成的完整蛋糕';
         }
 
-        // 修改提示文字，提示可以进入插蜡烛环节
-        const hintEl = document.getElementById('assemblyHint');
-        if (hintEl) hintEl.textContent = '🎂 完成啦！点击进入插蜡烛环节吧～';
-        launchBalloons(25); // 调用这个函数放飞 25 个气球！
-        initCandleStage(); // 启动第五部分点蜡烛与结尾
+        launchBalloons(25);
 
+        const hintEl = document.getElementById('assemblyHint');
+        if (hintEl) {
+            hintEl.textContent = '🎂 完成啦！点击这里进入点蜡烛环节吧～';
+            hintEl.style.cursor = 'pointer';
+            hintEl.onclick = () => {
+                launchBalloons(15);
+                const stage = document.getElementById('cake-assembly-stage');
+                if (stage) stage.style.display = 'none';
+                
+                if (typeof initCandleStage === 'function') {
+                    initCandleStage(); // 切换到蜡烛环节
+                }
+            };
+        }
     }
 
-    loadCurrentStep();
+    // 启动第一步！
+    loadCurrentStep(); 
 }
-// 当摆放完最后一个食材时：
-function onCakeFinished() {
-    // 1. 更新顶部提示词
-    hintBox.textContent = "🎂 完成啦！点击进入插蜡烛环节吧～"; //[cite: 17]
 
-    // 2. 立即放飞气球庆祝！
-    launchBalloons(25); 
-
-    // 3. 给提示框添加点击事件，点击进入下一关（插蜡烛）
-    hintBox.style.cursor = "pointer";
-    hintBox.onclick = function() {
-        // 再次放一波气球作为切关过渡
-        launchBalloons(15); 
-        
-        // 延时 0.5 秒跳转到下一个场景/页面
-        setTimeout(() => {
-            // 这里填写你进入插蜡烛环节的代码，例如：
-            // enterCandleStage(); 或者是 window.location.href = "candle.html";
-        }, 500);
-    };
-}
-// 3. 动态注入 CSS 样式（背景与原图转盘完美融合，适配全屏与半屏）
+// 3. 动态注入 CSS 样式（在这里随时调整蛋糕和转盘的尺寸/位置）
 function injectAssemblyStyles() {
     if (document.getElementById('cake-assembly-styles')) return;
 
     const style = document.createElement('style');
     style.id = 'cake-assembly-styles';
     style.textContent = [
-        /* 最外层舞台：全屏居中容器，防止电脑宽屏拉伸背景 */
         '#cake-assembly-stage { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #2c2c2c; display: flex; justify-content: center; align-items: center; z-index: 9999; overflow: hidden; font-family: sans-serif; user-select: none; -webkit-user-select: none; }',
         
         '.assembly-hint { position: absolute; top: 5%; background: rgba(255, 255, 255, 0.92); padding: 12px 24px; border-radius: 30px; font-size: 1.1rem; color: #d63031; font-weight: bold; box-shadow: 0 8px 20px rgba(0,0,0,0.15); z-index: 20; text-align: center; max-width: 85%; }',
         
-        /* 核心舞台：限制最大宽度为 480px（精细比例窗口），电脑全屏/半屏/手机视角完全一致 */
         '.assembly-main { position: relative; width: 100%; max-width: 480px; height: 100%; background: url("dangaobeijing.jpg") center bottom / cover no-repeat; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; box-shadow: 0 0 30px rgba(0,0,0,0.5); }',
         
-        /* 🍓 掉落/悬浮食材大小位置 */
-        '.floating-ingredient-wrapper { position: absolute; top: 10vh; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; cursor: pointer; z-index: 15; transition: opacity 0.3s ease; }',
+        '/* 🍓 悬浮/下落食材（调整 top 可以改变初始高度） */',
+        '.floating-ingredient-wrapper { position: absolute; top: 12vh; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; cursor: pointer; z-index: 15; transition: opacity 0.3s ease; }',
         '.floating-ingredient { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25)); }',
         
-        /* 🎂 蛋糕：精确踩在背景图自带的转盘正中央 */
-        /* 想调蛋糕大小改 width: 175px；想调高低上下踩准改 bottom: 25.5vh */
-        '.main-cake-img { position: absolute; bottom: 25.5vh; left: 50%; transform: translateX(-50%); width: 175px; z-index: 5; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
-        
-        /* 隐藏多余的独立转盘图（使用背景原图的转盘） */
-        '.tray-img { display: none !important; }',
+        '/* 🍽️ 转盘底座（如果背景图自带转盘不需要单独显示，可设置 display: none;） */',
+        '.tray-img { position: absolute; bottom: 16vh; left: 50%; transform: translateX(-50%); width:400px; z-index: 4; object-fit: contain; display: block; }',
 
+        '/* 🎂 蛋糕主体（修改 bottom 调整高低，修改 width 调整大小） */',
+        '.main-cake-img { position: absolute; bottom: 25vh; left: 50%; transform: translateX(-50%); width: 380px; z-index: 5; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
+
+        '/* 动画定义 */',
         '.pulse-anim { animation: floatingBreath 2s ease-in-out infinite; }',
         '@keyframes floatingBreath { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.03); } }',
         
@@ -1832,7 +1807,7 @@ function injectAssemblyStyles() {
         '@keyframes flyDownToCake { 0% { transform: translateY(0) scale(1.05); opacity: 1; } 100% { transform: translateY(40vh) scale(0.4); opacity: 0; } }',
         
         '.cake-bounce { animation: cakeBounce 0.3s ease; }',
-        '@keyframes cakeBounce { 0% { transform: scale(1); } 50% { transform: scale(1.05) translateY(3px); } 100% { transform: scale(1); } }',
+        '@keyframes cakeBounce { 0% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.05) translateY(3px); } 100% { transform: translateX(-50%) scale(1); } }',
 
         '.balloon-container { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 10000; overflow: hidden; }',
         '.balloon { position: absolute; bottom: -100px; width: 50px; height: 62px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; opacity: 0.9; animation: balloonRise 6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); }',
@@ -1841,9 +1816,10 @@ function injectAssemblyStyles() {
         '@keyframes balloonRise { 0% { transform: translateY(0) rotate(0deg); opacity: 0.95; } 50% { transform: translateY(-60vh) rotate(8deg); } 100% { transform: translateY(-120vh) rotate(-8deg); opacity: 0; } }'
     ].join('\n');
     
-    document.head.appendChild(style); // 👈 英文源码 document.head
+    document.head.appendChild(style);
 }
-// 触发气球升空庆祝函数
+
+// 4. 触发气球升空庆祝函数
 function launchBalloons(count = 20) {
     let container = document.querySelector('.balloon-container');
     if (!container) {
