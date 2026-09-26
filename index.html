@@ -1669,6 +1669,13 @@ const CakeAudio = {
     // 创建蛋糕主体展示区域
     const cakeWrapper = document.createElement('div');
     cakeWrapper.className = 'cake-display-wrapper';
+       // 1. 新增：创建转台图片（做底座）
+const trayImg = document.createElement('img');
+trayImg.className = 'tray-img';
+trayImg.id = 'trayImg';
+trayImg.src = 'zhuantai.png';
+trayImg.alt = '转台';
+cakeWrapper.appendChild(trayImg); // 先把转台塞进容器（在底层）
 
     const mainCakeImg = document.createElement('img');
     mainCakeImg.className = 'main-cake-img';
