@@ -1778,7 +1778,9 @@ function startFinalStage() {
 
 // 3. 动态注入 CSS 样式（在这里随时调整蛋糕和转盘的尺寸/位置）
 function injectAssemblyStyles() {
-    if (document.getElementById('cake-assembly-styles')) return;
+    // 关键：如果已经有旧样式，先强制删掉，防止浏览器使用旧缓存
+    const oldStyle = document.getElementById('cake-assembly-styles');
+    if (oldStyle) oldStyle.remove();
 
     const style = document.createElement('style');
     style.id = 'cake-assembly-styles';
@@ -1793,20 +1795,19 @@ function injectAssemblyStyles() {
         '.floating-ingredient-wrapper { position: absolute; top: 12vh; left: 50%; transform: translateX(-50%); width: 100px; height: 100px; cursor: pointer; z-index: 15; transition: opacity 0.3s ease; }',
         '.floating-ingredient { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25)); }',
         
-        '/* 🍰 蛋糕展示框：锁定底部高度 */',
-        '.cake-display-wrapper { position: absolute; bottom: 8vh; left: 50%; transform: translateX(-50%); width: 90%; max-width: 360px; height: 260px; pointer-events: none; z-index: 10; display: flex; justify-content: center; align-items: flex-end; }',
+        '/* 🍰 蛋糕展示框 */',
+        '.cake-display-wrapper { position: absolute; bottom: 8vh; left: 50%; transform: translateX(-50%); width: 90%; max-width: 360px; height: 260px; pointer-events: none; z-index: 10; display: flex !important; justify-content: center !important; align-items: flex-end !important; }',
 
-        '/* 🍽️ 转盘底座：处于最底层 (z-index: 1) */',
-        '.tray-img { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; z-index: 1; object-fit: contain; display: block !important; }',
+        '/* 🍽️ 转盘底座：处于底层 */',
+        '.tray-img { position: absolute !important; bottom: 0 !important; left: 50% !important; transform: translateX(-50%) !important; width: 100% !important; z-index: 1 !important; object-fit: contain !important; display: block !important; }',
 
-        '/* 🎂 蛋糕主体：叠在转盘上面 (z-index: 2)，并向上偏移压在盘子里 */',
-        '.main-cake-img { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 75%; z-index: 2; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)); transition: transform 0.2s ease; transform-origin: bottom center; }',
+        '/* 🎂 蛋糕主体：强制拔高，覆盖在转盘上面 */',
+        '.main-cake-img { position: absolute !important; bottom: 40px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; z-index: 10 !important; object-fit: contain !important; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15)) !important; transition: transform 0.2s ease !important; transform-origin: bottom center !important; }',
 
         '/* 动画定义 */',
         '.pulse-anim { animation: floatingBreath 2s ease-in-out infinite; }',
         '@keyframes floatingBreath { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-8px) scale(1.03); } }',
         
-        '/* 修正下落动画：确保正好落到蛋糕顶部 */',
         '.fly-down-anim { animation: flyDownToCake 0.45s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards; }',
         '@keyframes flyDownToCake { 0% { transform: translateY(0) scale(1.05); opacity: 1; } 100% { transform: translateY(48vh) scale(0.5); opacity: 0; } }',
         
@@ -1822,7 +1823,6 @@ function injectAssemblyStyles() {
     
     document.head.appendChild(style);
 }
-
 // 4. 触发气球升空庆祝函数
 function launchBalloons(count = 20) {
     let container = document.querySelector('.balloon-container');
