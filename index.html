@@ -1840,7 +1840,7 @@ function injectAssemblyStyles() {
         '@keyframes balloonRise { 0% { transform: translateY(0) rotate(0deg); opacity: 0.95; } 50% { transform: translateY(-60vh) rotate(8deg); } 100% { transform: translateY(-120vh) rotate(-8deg); opacity: 0; } }'
     ].join('\n');
     
-    document head.appendChild(style);
+    document.head.appendChild(style);
 }
 // 触发气球升空庆祝函数
 function launchBalloons(count = 20) {
